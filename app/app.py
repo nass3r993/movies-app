@@ -836,5 +836,4 @@ if __name__ == '__main__':
         upgrade_database()  # Add wallet balance to existing users
         create_default_profile_picture()
         create_sample_data()
-    app.run(debug=False)
-    app.run(host="0.0.0.0", port=5001)
+    app.run(host="0.0.0.0", port=5001, debug=False)
