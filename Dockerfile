@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy all files and folders from the current directory to /app in the container
 COPY . .
 
+# Create the /instance folder in the container root
+RUN mkdir -p /instance
+
 # Install Python dependencies from requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
