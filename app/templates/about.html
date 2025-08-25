@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+
+
+{% block title %}About Us - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-16">
+    <!-- Hero Section -->
+    <div class="text-center mb-16">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6">About CinemaMax</h1>
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+            We're passionate about bringing you the ultimate movie experience with cutting-edge technology, 
+            premium comfort, and the latest blockbusters.
+        </p>
+    </div>
+    
+    <!-- Mission Section -->
+    <div class="mb-16">
+        <div>
+            <h2 class="text-3xl font-bold text-center mb-12 gold-accent">Our Mission</h2>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                Our mission is to provide the most immersive and comfortable cinema experience possible, 
+                featuring the latest films in state-of-the-art theaters with premium amenities.
+            </p>
+
+        </div>
+    </div>
+    
+    <!-- Features Grid -->
+    <div class="mb-16">
+        <h2 class="text-3xl font-bold text-center mb-12 gold-accent">Why Choose CinemaMax?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center bg-gray-800 p-6 rounded-lg" style="background-color: rgb(21, 22, 23) !important;">
+                <i class="fas fa-tv text-4xl gold-accent mb-4"></i>
+                <h3 class="text-xl font-bold mb-3">Premium Screens</h3>
+                <p class="text-gray-300">Experience movies on our massive 4K screens with crystal-clear picture quality.</p>
+            </div>
+            <div class="text-center bg-gray-800 p-6 rounded-lg"  style="background-color: rgb(21, 22, 23) !important;">
+                <i class="fas fa-volume-up text-4xl gold-accent mb-4"></i>
+                <h3 class="text-xl font-bold mb-3">Dolby Atmos Sound</h3>
+                <p class="text-gray-300">Immerse yourself in three-dimensional soundscapes that put you in the action.</p>
+            </div>
+            <div class="text-center bg-gray-800 p-6 rounded-lg"  style="background-color: rgb(21, 22, 23) !important;">
+                <i class="fas fa-couch text-4xl gold-accent mb-4"></i>
+                <h3 class="text-xl font-bold mb-3">Luxury Seating</h3>
+                <p class="text-gray-300">Relax in our premium leather recliners with extra legroom and cup holders.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Section -->
+    <div class="bg-gray-800 rounded-lg p-8 mb-16"  style="background-color: rgb(21, 22, 23) !important;">
+        <h2 class="text-3xl font-bold text-center mb-8 gold-accent">CinemaMax by the Numbers</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="text-3xl font-bold text-yellow-400 mb-2">15+</div>
+                <div class="text-gray-300">Theaters</div>
+            </div>
+            <div>
+                <div class="text-3xl font-bold text-yellow-400 mb-2">500K+</div>
+                <div class="text-gray-300">Happy Customers</div>
+            </div>
+            <div>
+                <div class="text-3xl font-bold text-yellow-400 mb-2">10+</div>
+                <div class="text-gray-300">Years Experience</div>
+            </div>
+            <div>
+                <div class="text-3xl font-bold text-yellow-400 mb-2">1M+</div>
+                <div class="text-gray-300">Tickets Sold</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Team Section -->
+    <div class="text-center">
+        <h2 class="text-3xl font-bold mb-8 gold-accent">Our Commitment</h2>
+        <p class="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            From our friendly staff to our cutting-edge technology, every aspect of CinemaMax is designed 
+            to exceed your expectations. We're committed to making every visit memorable, whether you're 
+            watching the latest blockbuster or discovering an indie gem.
+        </p>
+        <div class="mt-8">
+            <a href="{{ url_for('home') }}" class="btn-primary px-8 py-3 rounded-lg text-lg">
+                Experience CinemaMax Today
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

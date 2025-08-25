@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-16">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-bold mb-6">Get in Touch</h1>
+            <p class="text-xl text-gray-300">
+                We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12" >
+            <!-- Contact Form -->
+            <div class="bg-gray-800 p-8 rounded-lg" style="background-color: rgb(21, 22, 23) !important;">
+                <h2 class="text-2xl font-bold mb-6 gold-accent">Send us a Message</h2>
+                
+                <form method="POST" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Name *</label>
+                        <input style=" background-color: rgb(57, 59, 63) !important;;" type="text" name="name" required
+                               class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-yellow-400 focus:outline-none"
+                               placeholder="Your full name">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Email *</label>
+                        <input style=" background-color: rgb(57, 59, 63) !important;;" type="email" name="email" required
+                               class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-yellow-400 focus:outline-none"
+                               placeholder="your@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Subject *</label>
+                        <select style=" background-color: rgb(57, 59, 63) !important;;" name="subject" required
+                                class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-yellow-400 focus:outline-none">
+                            <option value="">Select a subject</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="booking">Booking Issue</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Message *</label>
+                        <textarea style=" background-color: rgb(57, 59, 63) !important;;"name="message" rows="5" required
+                                  class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-yellow-400 focus:outline-none"
+                                  placeholder="Tell us how we can help you..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full btn-primary py-3 rounded-lg">
+                        <i class="fas fa-paper-plane mr-2"></i>Send Message
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="space-y-8">
+                <div>
+                    <h2 class="text-2xl font-bold mb-6 gold-accent">Contact Information</h2>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-gray-800 text-black p-3 rounded-full" style="background-color: #191a1bff !important;">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Address</h3>
+                                <p class="text-gray-300">Saudi Arabia<br>Riyadh, KAFD, cinemamax</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4 ">
+                            <div class="bg-gray-800 text-black p-3 rounded-full" style="background-color: #191a1bff !important;">
+                                <i class="fas fa-phone text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Phone</h3>
+                                <p class="text-gray-300">(555) 123-4567</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-gray-800 text-black p-3 rounded-full" style="background-color: #191a1bff !important;">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Email</h3>
+                                <p class="text-gray-300 ">info@cinemamax.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-gray-800 text-black p-3 rounded-full" style="background-color: #191a1bff !important;">
+                                <i class="fas fa-clock text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold mb-1">Hours</h3>
+                                <p class="text-gray-300">
+                                    Mon - Sun: 10:00 AM - 12:00 AM<br>
+                                    Box Office: 9:30 AM - 10:30 PM
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ Section -->
+                <div class="bg-gray-800 p-6 rounded-lg" style="background-color: rgb(21, 22, 23) !important;">
+                    <h3 class="text-xl font-bold mb-4 gold-accent">Frequently Asked Questions</h3>
+                    
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <h4 class="font-semibold mb-1">Can I cancel or refund my tickets?</h4>
+                            <p class="text-gray-300">Tickets can be cancelled up to 2 hours before showtime for a full refund.</p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-1">Do you offer group discounts?</h4>
+                            <p class="text-gray-300">Yes! Groups of 10+ receive a 15% discount. Contact us for details.</p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-1">Is food allowed in the theater?</h4>
+                            <p class="text-gray-300">Outside food is not permitted. We offer a full concession stand with snacks and drinks.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

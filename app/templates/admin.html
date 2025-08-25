@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-red-400">
+        <i class="fas fa-cog mr-2"></i>Admin Panel
+    </h1>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- Stats Cards -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold">Total Movies</h3>
+                    <p class="text-3xl font-bold">{{ movies|length }}</p>
+                </div>
+                <i class="fas fa-film text-4xl opacity-80"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-green-600 to-green-800 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold">Total Users</h3>
+                    <p class="text-3xl font-bold">{{ users|length }}</p>
+                </div>
+                <i class="fas fa-users text-4xl opacity-80"></i>
+            </div>
+        </div>
+        
+        <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-6 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold">Total Bookings</h3>
+                    <p class="text-3xl font-bold">{{ bookings|length }}</p>
+                </div>
+                <i class="fas fa-ticket-alt text-4xl opacity-80"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <!-- Movies Management -->
+        <div class="bg-gray-800 p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold gold-accent">Movies Management</h2>
+                <a href="{{ url_for('add_movie') }}" class="btn-primary px-4 py-2 rounded-lg">
+                    <i class="fas fa-plus mr-2"></i>Add Movie
+                </a>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="text-left py-2">Title</th>
+                            <th class="text-left py-2">Genre</th>
+                            <th class="text-left py-2">Status</th>
+                            <th class="text-left py-2">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movie in movies %}
+                            <tr class="border-b border-gray-700">
+                                <td class="py-2 font-medium">{{ movie.title }}</td>
+                                <td class="py-2 text-gray-300">{{ movie.genre }}</td>
+                                <td class="py-2">
+                                    {% if movie.is_now_showing %}
+                                        <span class="bg-green-600 text-white px-2 py-1 rounded text-xs">Now Showing</span>
+                                    {% else %}
+                                        <span class="bg-yellow-600 text-black px-2 py-1 rounded text-xs">Coming Soon</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-2 text-green-400 font-semibold">${{ "%.2f"|format(movie.price) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Recent Bookings -->
+        <div class="bg-gray-800 p-6 rounded-lg">
+            <h2 class="text-xl font-bold mb-6 gold-accent">Recent Bookings</h2>
+            
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                {% for booking in bookings[-10:] %}
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-semibold">{{ booking.showtime.movie.title }}</h3>
+                            <span class="text-green-400 font-bold">${{ "%.2f"|format(booking.total_price) }}</span>
+                        </div>
+                        <p class="text-sm text-gray-300">
+                            User: {{ booking.user.username }}
+                        </p>
+                        <p class="text-sm text-gray-300">
+                            Seats: {{ booking.seats }}
+                        </p>
+                        <p class="text-xs text-gray-400">
+                            {{ booking.booking_date.strftime('%b %d, %Y at %I:%M %p') }}
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Users Overview -->
+        <div class="bg-gray-800 p-6 rounded-lg xl:col-span-2">
+            <h2 class="text-xl font-bold mb-6 gold-accent">Users Overview</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="text-left py-2">Username</th>
+                            <th class="text-left py-2">Email</th>
+                            <th class="text-left py-2">Role</th>
+                            <th class="text-left py-2">Join Date</th>
+                            <th class="text-left py-2">Bookings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr class="border-b border-gray-700">
+                                <td class="py-2 font-medium">{{ user.username }}</td>
+                                <td class="py-2 text-gray-300">{{ user.email }}</td>
+                                <td class="py-2">
+                                    {% if user.is_admin %}
+                                        <span class="bg-red-600 text-white px-2 py-1 rounded text-xs">Admin</span>
+                                    {% else %}
+                                        <span class="bg-gray-600 text-white px-2 py-1 rounded text-xs">User</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-2 text-gray-400">{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                                <td class="py-2">{{ user.bookings|length }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

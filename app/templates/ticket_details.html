@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket Details - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-20">
+    <div class="max-w-4xl mx-auto px-6">
+        <!-- Back Button -->
+        <div class="mb-12">
+            <a href="{{ url_for('dashboard') }}" 
+               class="inline-flex items-center text-gray-400 hover:text-white transition-colors group">
+                <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i>
+                <span class="font-medium">Back to Dashboard</span>
+            </a>
+        </div>
+        
+        <!-- Digital Ticket -->
+        <div class="card-elegant overflow-hidden fade-in">
+            <!-- Ticket Header -->
+            <div class="bg-gradient-to-r from-gray-900 to-black p-12 text-center relative">
+                <!-- Decorative Elements -->
+                <div class="absolute inset-0 opacity-5">
+                    <div class="absolute top-6 left-6 w-12 h-12 border-2 border-white rounded-full"></div>
+                    <div class="absolute top-6 right-6 w-12 h-12 border-2 border-white rounded-full"></div>
+                    <div class="absolute bottom-6 left-6 w-12 h-12 border-2 border-white rounded-full"></div>
+                    <div class="absolute bottom-6 right-6 w-12 h-12 border-2 border-white rounded-full"></div>
+                </div>
+                
+                <div class="relative z-10">
+                    <div class="w-20 h-20 bg-white bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-ticket-alt text-3xl text-white"></i>
+                    </div>
+                    <h1 class="text-4xl font-bold text-white mb-3">Digital Ticket</h1>
+                    <p class="text-gray-300 text-lg">CinemaMax Premium Experience</p>
+                </div>
+            </div>
+            
+            <!-- Ticket Body -->
+            <div class="bg-gray-900 p-12">
+                <!-- Movie Information -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
+                    <div class="lg:col-span-1">
+                        <div class="relative group">
+                            <img src="{{ booking.showtime.movie.poster_url }}" 
+                                 alt="{{ booking.showtime.movie.title }}" 
+                                 class="w-full rounded-xl shadow-2xl transition-transform group-hover:scale-105">
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-xl transition-all"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="lg:col-span-2">
+                        <h2 class="text-3xl font-bold text-white mb-8">{{ booking.showtime.movie.title }}</h2>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-center text-gray-300">
+                                <div class="w-12 h-12 bg-white bg-opacity-10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-map-marker-alt text-gold"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Cinema</p>
+                                    <p class="text-white font-medium">{{ booking.showtime.cinema.name }} - {{ booking.showtime.cinema.location }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center text-gray-300">
+                                <div class="w-12 h-12 bg-white bg-opacity-10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-calendar text-gold"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Date</p>
+                                    <p class="text-white font-medium">{{ booking.showtime.show_date.strftime('%A, %B %d, %Y') }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center text-gray-300">
+                                <div class="w-12 h-12 bg-white bg-opacity-10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-clock text-gold"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Showtime</p>
+                                    <p class="text-white font-medium">{{ booking.showtime.show_time.strftime('%I:%M %p') }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center text-gray-300">
+                                <div class="w-12 h-12 bg-white bg-opacity-10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-chair text-gold"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Seats</p>
+                                    <p class="text-white font-medium">{{ booking.seats }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center text-gray-300">
+                                <div class="w-12 h-12 bg-white bg-opacity-10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-film text-gold"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Movie Details</p>
+                                    <p class="text-white font-medium">{{ booking.showtime.movie.genre }} • {{ booking.showtime.movie.rating }} • {{ booking.showtime.movie.duration }} min</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Elegant Divider -->
+                <div class="relative my-12">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-700 border-dashed"></div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <div class="bg-gray-900 px-6">
+                            <i class="fas fa-ticket-alt text-gray-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Booking Details & QR Code -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                    <!-- Booking Information -->
+                    <div class="card-elegant p-8">
+                        <h3 class="text-xl font-semibold text-white mb-6 flex items-center">
+                            <i class="fas fa-info-circle text-gold mr-3"></i>
+                            Booking Information
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center py-3 border-b border-gray-700">
+                                <span class="text-gray-400">Booking ID</span>
+                                <span class="text-white font-mono font-semibold">#{{ booking.id }}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-3 border-b border-gray-700">
+                                <span class="text-gray-400">Booking Date</span>
+                                <span class="text-white">{{ booking.booking_date.strftime('%b %d, %Y at %I:%M %p') }}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-3 border-b border-gray-700">
+                                <span class="text-gray-400">Customer</span>
+                                <span class="text-white font-medium">{{ booking.user.username }}</span>
+                            </div>
+                            <div class="flex justify-between items-center py-3">
+                                <span class="text-gray-400">Total Price</span>
+                                <span class="text-gold font-bold text-2xl">${{ "%.2f"|format(booking.total_price) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- QR Code Section -->
+                    <div class="card-elegant p-8 text-center">
+                        <h3 class="text-xl font-semibold text-white mb-6 flex items-center justify-center">
+                            <i class="fas fa-qrcode text-gold mr-3"></i>
+                            Entry QR Code
+                        </h3>
+                        <div class="bg-white p-6 rounded-xl inline-block mb-4 shadow-lg">
+                            <div class="qr-pattern w-32 h-32 rounded-lg"></div>
+                        </div>
+                        <p class="text-gray-400 font-mono text-sm mb-2">{{ booking.qr_code[:12] }}...</p>
+                        <p class="text-gray-500 text-sm">Show this code at the cinema entrance</p>
+                    </div>
+                </div>
+                
+                <!-- Important Information -->
+                <div class="card-elegant p-8 mb-8">
+                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center">
+                        <i class="fas fa-exclamation-triangle text-gold mr-3"></i>
+                        Important Information
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <span class="text-gray-300">Please arrive at least 15 minutes before showtime</span>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <span class="text-gray-300">Present this digital ticket or QR code at the entrance</span>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <span class="text-gray-300">Outside food and beverages are not permitted</span>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <span class="text-gray-300">Tickets are non-refundable within 2 hours of showtime</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="shareTicket()" 
+                            class="flex-1 btn-secondary py-4 text-lg font-semibold">
+                        <i class="fas fa-share mr-3"></i>Share Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Support Section -->
+        <div class="text-center mt-12">
+            <p class="text-gray-400 mb-4 text-lg">Need help with your booking?</p>
+            <a href="{{ url_for('contact') }}" 
+               class="inline-flex items-center text-gold hover:text-white transition-colors font-medium text-lg group">
+                <i class="fas fa-headset mr-3 group-hover:scale-110 transition-transform"></i>
+                Contact Support
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function shareTicket() {
+    const ticketUrl = window.location.href;
+    const movieTitle = "{{ booking.showtime.movie.title }}";
+    
+    if (navigator.share) {
+        navigator.share({
+            title: `CinemaMax Ticket - ${movieTitle}`,
+            text: `Check out this ticket for ${movieTitle} at CinemaMax!`,
+            url: ticketUrl
+        });
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        navigator.clipboard.writeText(ticketUrl).then(() => {
+            // Create a modern toast notification
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-24 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+            toast.innerHTML = '<i class="fas fa-check mr-2 text-green-400"></i>Ticket link copied to clipboard!';
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }).catch(() => {
+            // Fallback if clipboard API fails
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-24 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+            toast.innerHTML = `<i class="fas fa-link mr-2 text-blue-400"></i>Share this link: <br><small class="font-mono">${ticketUrl}</small>`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 5000);
+            }, 8000);
+        });
+    }
+}
+
+// Enhanced print styles
+const printStyles = `
+    @media print {
+        body * { visibility: hidden; }
+        .container, .container * { visibility: visible; }
+        .container { position: absolute; left: 0; top: 0; width: 100%; }
+        nav, footer, .btn-primary, .btn-secondary { display: none !important; }
+        .card-elegant { border: 1px solid #333 !important; }
+        .bg-gray-900 { background: white !important; color: black !important; }
+        .text-white { color: black !important; }
+        .text-gray-300, .text-gray-400 { color: #666 !important; }
+    }
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.innerText = printStyles;
+document.head.appendChild(styleSheet);
+</script>
+
+<style>
+/* Enhanced QR code pattern */
+.qr-pattern {
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            #000 0px,
+            #000 3px,
+            transparent 3px,
+            transparent 6px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            #000 0px,
+            #000 3px,
+            transparent 3px,
+            transparent 6px
+        ),
+        repeating-linear-gradient(
+            45deg,
+            #000 0px,
+            #000 2px,
+            transparent 2px,
+            transparent 4px
+        );
+    background-size: 6px 6px, 6px 6px, 8px 8px;
+}
+
+/* Smooth animations */
+.fade-in {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

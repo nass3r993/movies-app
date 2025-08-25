@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Update Profile - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-20">
+    <div class="max-w-4xl mx-auto px-6">
+        <!-- Back Button -->
+        <div class="mb-12">
+            <a href="{{ url_for('dashboard') }}" 
+               class="inline-flex items-center text-gray-400 hover:text-white transition-colors group">
+                <i class="fas fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i>
+                <span class="font-medium">Back to Dashboard</span>
+            </a>
+        </div>
+        
+        <!-- Page Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-4">Update Profile</h1>
+            <p class="text-gray-400 text-lg">Manage your account information and preferences</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Profile Picture Section -->
+            <div class="lg:col-span-1">
+                <div class="card-modern p-8 text-center">
+                    <h2 class="text-xl font-semibold text-white mb-6">Profile Picture</h2>
+                    
+                    <div class="relative inline-block mb-6">
+                        <img id="profilePreview" 
+                             src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}"
+                             alt="Profile Picture" 
+                             class="w-40 h-40 rounded-full border-4 border-gray-600 object-cover shadow-lg">
+                        <button type="button" 
+                                onclick="document.getElementById('profilePictureInput').click()"
+                                class="absolute bottom-2 right-2 bg-white text-black rounded-full p-3 transition-all shadow-lg hover:bg-gray-100 hover:scale-110">
+                            <i class="fas fa-camera text-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="profilePictureForm" method="POST" action="{{ url_for('update_profile_picture') }}" enctype="multipart/form-data">
+                        <input type="file" 
+                               id="profilePictureInput" 
+                               name="profile_picture" 
+                               accept="image/*" 
+                               onchange="previewAndUploadImage()" 
+                               class="hidden">
+                    </form>
+                    
+                    <p class="text-gray-400 text-sm">
+                        Click the camera icon to change your profile picture
+                    </p>
+                    <p class="text-gray-500 text-xs mt-2">
+                        Supported formats: JPG, PNG, GIF (Max 16MB)
+                    </p>
+                </div>
+                
+                <!-- Account Stats -->
+                <div class="card-modern p-6 mt-6">
+                    <h3 class="text-lg font-semibold text-white mb-4">Account Stats</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Member Since</span>
+                            <span class="text-white">{{ current_user.created_at.strftime('%B %Y') }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Total Bookings</span>
+                            <span class="text-white font-semibold">{{ current_user.bookings|length }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-400">Account Type</span>
+                            <span class="text-{{ 'yellow-400' if current_user.is_admin else 'green-400' }} font-semibold">
+                                {{ 'Admin' if current_user.is_admin else 'Regular' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Information Section -->
+            <div class="lg:col-span-2">
+                <div class="card-modern p-8">
+                    <h2 class="text-2xl font-semibold text-white mb-8">Account Information</h2>
+                    
+                    <!-- Update Profile Form -->
+                    <form method="POST" action="{{ url_for('update_profile') }}" class="space-y-8">
+                        <!-- Basic Information -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-6 flex items-center">
+                                <i class="fas fa-user text-gold mr-3"></i>
+                                Basic Information
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="form-label">Username</label>
+                                    <input type="text" 
+                                           name="username" 
+                                           value="{{ current_user.username }}" 
+                                           required
+                                           class="form-input">
+                                    <p class="text-gray-500 text-sm mt-1">This will be displayed publicly</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" 
+                                           name="email" 
+                                           value="{{ current_user.email }}" 
+                                           required
+                                           class="form-input">
+                                    <p class="text-gray-500 text-sm mt-1">Used for login and notifications</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Divider -->
+                        <div class="border-t border-gray-700"></div>
+                        
+                        <!-- Password Change -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-6 flex items-center">
+                                <i class="fas fa-lock text-gold mr-3"></i>
+                                Change Password
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" 
+                                           name="current_password" 
+                                           class="form-input"
+                                           placeholder="Enter your current password">
+                                    <p class="text-gray-500 text-sm mt-1">Required to change password</p>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="form-label">New Password</label>
+                                        <input type="password" 
+                                               name="new_password" 
+                                               id="newPassword"
+                                               class="form-input"
+                                               placeholder="Enter new password">
+                                        <div id="passwordStrength" class="mt-2 text-sm"></div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="form-label">Confirm New Password</label>
+                                        <input type="password" 
+                                               name="confirm_password" 
+                                               id="confirmPassword"
+                                               class="form-input"
+                                               placeholder="Confirm new password">
+                                        <div id="passwordMatch" class="mt-2 text-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                            <button type="submit" class="btn-primary px-8 py-3 font-semibold">
+                                <i class="fas fa-save mr-2"></i>Save Changes
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn-secondary px-8 py-3 font-semibold text-center">
+                                <i class="fas fa-times mr-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden items-center justify-center">
+    <div class="card-modern p-8 text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+        <p class="text-white">Updating profile picture...</p>
+    </div>
+</div>
+
+<script>
+// Profile picture preview and upload
+function previewAndUploadImage() {
+    const input = document.getElementById('profilePictureInput');
+    const preview = document.getElementById('profilePreview');
+    const overlay = document.getElementById('loadingOverlay');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Validate file size (16MB)
+        if (file.size > 16 * 1024 * 1024) {
+            showToast('File size must be less than 16MB', 'error');
+            return;
+        }
+        
+        // Validate file type
+        if (!file.type.match('image.*')) {
+            showToast('Please select a valid image file', 'error');
+            return;
+        }
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        
+        // Show loading overlay
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        
+        // Upload the image
+        const form = document.getElementById('profilePictureForm');
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            
+            if (data.success) {
+                showToast('Profile picture updated successfully!', 'success');
+                // Update the preview with the new image
+                preview.src = "{{ url_for('static', filename='uploads/') }}" + data.filename + "?t=" + new Date().getTime();
+            } else {
+                showToast('Error: ' + data.error, 'error');
+                // Revert preview
+                preview.src = "{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}";
+            }
+        })
+        .catch(error => {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+            showToast('Error uploading image', 'error');
+            preview.src = "{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}";
+        });
+    }
+}
+
+// Password strength checker
+document.getElementById('newPassword').addEventListener('input', function() {
+    const password = this.value;
+    const strengthDiv = document.getElementById('passwordStrength');
+    
+    if (password.length === 0) {
+        strengthDiv.innerHTML = '';
+        return;
+    }
+    
+    let strength = 0;
+    let feedback = [];
+    
+    if (password.length >= 8) strength++;
+    else feedback.push('At least 8 characters');
+    
+    if (/[a-z]/.test(password)) strength++;
+    else feedback.push('Lowercase letter');
+    
+    if (/[A-Z]/.test(password)) strength++;
+    else feedback.push('Uppercase letter');
+    
+    if (/[0-9]/.test(password)) strength++;
+    else feedback.push('Number');
+    
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    else feedback.push('Special character');
+    
+    const colors = ['text-red-400', 'text-orange-400', 'text-yellow-400', 'text-blue-400', 'text-green-400'];
+    const labels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    
+    strengthDiv.className = `mt-2 text-sm ${colors[strength - 1] || 'text-red-400'}`;
+    strengthDiv.innerHTML = `Password Strength: ${labels[strength - 1] || 'Very Weak'}`;
+    
+    if (feedback.length > 0) {
+        strengthDiv.innerHTML += `<br><span class="text-gray-400">Missing: ${feedback.join(', ')}</span>`;
+    }
+});
+
+// Password match checker
+document.getElementById('confirmPassword').addEventListener('input', function() {
+    const password = document.getElementById('newPassword').value;
+    const confirm = this.value;
+    const matchDiv = document.getElementById('passwordMatch');
+    
+    if (confirm.length === 0) {
+        matchDiv.innerHTML = '';
+        return;
+    }
+    
+    if (password === confirm) {
+        matchDiv.className = 'mt-2 text-sm text-green-400';
+        matchDiv.innerHTML = '<i class="fas fa-check mr-1"></i>Passwords match';
+    } else {
+        matchDiv.className = 'mt-2 text-sm text-red-400';
+        matchDiv.innerHTML = '<i class="fas fa-times mr-1"></i>Passwords do not match';
+    }
+});
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+    const icon = type === 'success' ? 'fa-check' : type === 'error' ? 'fa-times' : 'fa-info';
+    
+    toast.className = `fixed top-24 right-6 ${bgColor} text-white px-6 py-4 rounded-lg shadow-lg z-50 fade-in max-w-sm`;
+    toast.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${icon} mr-3"></i>
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}
+
+// Form validation
+document.querySelector('form[action="{{ url_for("update_profile") }}"]').addEventListener('submit', function(e) {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const currentPassword = document.querySelector('input[name="current_password"]').value;
+    
+    // If trying to change password
+    if (newPassword || confirmPassword || currentPassword) {
+        if (!currentPassword) {
+            e.preventDefault();
+            showToast('Current password is required to change password', 'error');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            e.preventDefault();
+            showToast('New passwords do not match', 'error');
+            return;
+        }
+        
+        if (newPassword.length < 8) {
+            e.preventDefault();
+            showToast('New password must be at least 8 characters long', 'error');
+            return;
+        }
+    }
+});
+</script>
+{% endblock %}

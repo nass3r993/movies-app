@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} Reviews - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center mb-8">
+            <a href="{{ url_for('movie_detail', id=movie.id) }}" class="text-yellow-400 hover:text-yellow-300 mr-4 transition-colors duration-200">
+                <i class="fas fa-arrow-left"></i> Back to Movie
+            </a>
+            <h1 class="text-3xl font-bold">Reviews for {{ movie.title }}</h1>
+        </div>
+
+        <!-- Add Review Form -->
+        <div class="bg-gray-800 p-6 rounded-lg mb-8 border border-gray-700">
+            <h2 class="text-xl font-bold mb-6 text-yellow-400">Add Your Review</h2>
+            
+            <form method="POST" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium mb-3">Rating</label>
+                    <div class="flex items-center space-x-2 mb-4">
+                        {% for i in range(1, 6) %}
+                            <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" class="hidden" required>
+                            <label for="star{{ i }}" class="cursor-pointer">
+                                <i class="fas fa-star text-2xl text-gray-500 hover:text-yellow-400 star-rating-input transition-all duration-200 hover:scale-110" 
+                                   data-rating="{{ i }}"></i>
+                            </label>
+                        {% endfor %}
+                        <span id="rating-display" class="ml-4 text-gray-400 hidden">(0/5)</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-3">Your Review</label>
+                    <textarea name="content" rows="4" required
+                              class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 focus:outline-none transition-all duration-200 resize-none"
+                              placeholder="Share your thoughts about this movie..."></textarea>
+                </div>
+                
+                <button type="submit" class="bg-yellow-400 text-gray-900 font-semibold px-6 py-3 rounded-lg hover:bg-yellow-300 transition-all duration-200 flex items-center">
+                    <i class="fas fa-paper-plane mr-2"></i>Submit Review
+                </button>
+            </form>
+        </div>
+        
+        <!-- Reviews List -->
+        <div class="space-y-6">
+            {% for review in reviews %}
+                <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors duration-200">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-semibold text-lg text-yellow-400">{{ review.user.username }}</h3>
+                            <div class="flex items-center mt-2">
+                                {% for i in range(1, 6) %}
+                                    <i class="fas fa-star text-sm {% if i <= review.rating %}text-yellow-400{% else %}text-gray-500{% endif %}"></i>
+                                {% endfor %}
+                                <span class="ml-2 text-gray-400">({{ review.rating }}/5)</span>
+                            </div>
+                        </div>
+                        <span class="text-gray-400 text-sm">{{ review.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed">{{ review.content }}</p>
+                </div>
+            {% else %}
+                <div class="text-center py-16">
+                    <i class="fas fa-comments text-6xl text-gray-600 mb-4"></i>
+                    <p class="text-xl text-gray-400 mb-4">No reviews yet for this movie.</p>
+                    <p class="text-gray-500">Be the first to share your thoughts!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Star rating script loaded');
+    console.log('Star rating script loaded');
+    const stars = document.querySelectorAll('.star-rating-input');
+    const ratingDisplay = document.getElementById('rating-display');
+    let currentRating = 0;
+    
+    console.log('Found stars:', stars.length);
+    
+    console.log('Found stars:', stars.length);
+
+    function updateStars(rating) {
+        console.log('Updating stars to rating:', rating);
+        console.log('Updating stars to rating:', rating);
+        stars.forEach(star => {
+            const starValue = parseInt(star.dataset.rating);
+            console.log('Star value:', starValue, 'Rating:', rating);
+            if (starValue <= rating) {
+                star.classList.remove('text-gray-500');
+                star.classList.add('text-yellow-400');
+                console.log('Added yellow to star', starValue);
+            } else {
+                star.classList.remove('text-yellow-400');
+                star.classList.add('text-gray-500');
+                console.log('Added gray to star', starValue);
+            }
+        });
+        
+        // Update rating display
+        if (rating > 0) {
+            ratingDisplay.textContent = `(${rating}/5)`;
+            ratingDisplay.classList.remove('hidden');
+        } else {
+            ratingDisplay.classList.add('hidden');
+        }
+    }
+
+    stars.forEach(star => {
+        const rating = parseInt(star.dataset.rating);
+        
+        // Hover effect
+        star.addEventListener('mouseenter', () => {
+            console.log('Mouse enter on star', rating);
+            updateStars(rating);
+        });
+        
+        // Restore after hover
+        star.addEventListener('mouseleave', () => {
+            console.log('Mouse leave, restoring to currentRating:', currentRating);
+            updateStars(currentRating);
+        });
+        
+        // Click to set rating
+        star.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Star clicked, setting rating to:', rating);
+            console.log('Star clicked, setting rating to:', rating);
+            currentRating = rating;
+            document.querySelector(`input[value="${rating}"]`).checked = true;
+            updateStars(currentRating);
+            console.log('Current rating is now:', currentRating);
+        });
+    });
+
+    // Initialize stars on page load with no rating selected
+    console.log('Initializing stars with rating 0');
+    updateStars(0);
+});
+</script>
+{% endblock %}

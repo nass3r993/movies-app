@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-20">
+    <div class="fade-in">
+        <h1 class="section-title mb-12">Welcome back, {{ current_user.username }}!</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- User Profile -->
+            <div class="lg:col-span-1">
+                <div class="card-elegant p-8 mb-8">
+                    <h2 class="text-2xl font-semibold mb-8 text-white">Profile</h2>
+                    <div class="text-center mb-8">
+                        <div class="relative inline-block mb-4">
+                            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}"
+                                 alt="Profile Picture" 
+                                 class="w-32 h-32 rounded-full border-4 border-gray-600 object-cover mx-auto shadow-lg">
+                            <button onclick="document.getElementById('profilePictureInput').click()"
+                                    class="absolute bottom-0 right-0 bg-white text-black rounded-full p-3 transition-all shadow-lg hover:bg-gray-100">
+                                <i class="fas fa-camera text-sm"></i>
+                            </button>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-white mb-2">{{ current_user.username }}</h3>
+                        <p class="text-gray-400 mb-3">{{ current_user.email }}</p>
+                        <p class="text-sm text-gray-500">Member since {{ current_user.created_at.strftime('%B %Y') }}</p>
+                        <div class="mt-4">
+                            <a href="{{ url_for('update_profile') }}" class="btn-secondary px-4 py-2 text-sm">
+                                <i class="fas fa-edit mr-2"></i>Edit Profile
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Picture Upload Form -->
+                    <form id="profilePictureForm" method="POST" action="{{ url_for('update_profile_picture') }}" enctype="multipart/form-data" class="hidden">
+                        <input type="file" id="profilePictureInput" name="profile_picture" accept="image/*" onchange="uploadProfilePicture()">
+                    </form>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="card-elegant p-8">
+                    <h3 class="text-xl font-semibold mb-8 text-white">Quick Stats</h3>
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center p-6 rounded-xl bg-white bg-opacity-5">
+                            <div class="flex items-center">
+                                <i class="fas fa-ticket-alt mr-4 text-white text-xl"></i>
+                                <span class="text-white font-medium">Total Bookings</span>
+                            </div>
+                            <span class="font-bold text-2xl text-white">{{ bookings|length }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-6 rounded-xl bg-white bg-opacity-5">
+                            <div class="flex items-center">
+                                <i class="fas fa-heart mr-4 text-yellow-400 text-xl"></i>
+                                <span class="text-white font-medium">Watchlist Items</span>
+                            </div>
+                            <span class="font-bold text-2xl text-yellow-400">{{ watchlist|length }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-6 rounded-xl bg-white bg-opacity-5">
+                            <div class="flex items-center">
+                                <i class="fas fa-dollar-sign mr-4 text-green-400 text-xl"></i>
+                                <span class="text-white font-medium">Total Spent</span>
+                            </div>
+                            <span class="font-bold text-2xl text-green-400">
+                                ${{ "%.2f"|format(bookings|sum(attribute='total_price') or 0) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- My Bookings -->
+                <div class="card-elegant p-8 mb-8">
+                    <h2 class="text-3xl font-semibold mb-8 text-white">My Bookings</h2>
+                    
+                    {% if bookings %}
+                        <div class="space-y-6">
+                            {% for booking in bookings %}
+                                <div class="p-8 rounded-2xl bg-white bg-opacity-5 border border-gray-600 hover:border-gray-400 transition-all cursor-pointer group hover-lift"
+                                     onclick="window.location.href='{{ url_for('my_ticket_details', booking_id=booking.id) }}'">
+                                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                                        <div class="flex-1">
+                                            <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-gray-300 transition-colors">
+                                                {{ booking.showtime.movie.title }}
+                                                <i class="fas fa-external-link-alt ml-3 text-sm opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                            </h3>
+                                            <p class="text-sm mb-2 text-gray-300">
+                                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                                {{ booking.showtime.cinema.name }} - {{ booking.showtime.cinema.location }}
+                                            </p>
+                                            <p class="text-gray-400 text-sm">
+                                                <i class="fas fa-calendar mr-2"></i>
+                                                {{ booking.showtime.show_date.strftime('%B %d, %Y') }} at 
+                                                {{ booking.showtime.show_time.strftime('%I:%M %p') }}
+                                            </p>
+                                        </div>
+                                        <div class="text-right mt-4 md:mt-0">
+                                            <div class="px-4 py-2 rounded-lg text-xs font-mono mb-3 inline-block bg-white bg-opacity-10">
+                                                <i class="fas fa-ticket-alt mr-2"></i>{{ booking.ticket_hash[:8] }}...
+                                            </div>
+                                            <p class="text-3xl font-bold text-yellow-400">${{ "%.2f"|format(booking.total_price) }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm border-t border-gray-700 pt-6">
+                                        <div class="flex items-center mb-2 sm:mb-0">
+                                            <i class="fas fa-chair mr-3 text-gray-300"></i>
+                                            <span class="text-gray-300">Seats: {{ booking.seats }}</span>
+                                        </div>
+                                        <span class="text-gray-500">
+                                            <i class="fas fa-clock mr-2"></i>
+                                            Booked: {{ booking.booking_date.strftime('%b %d, %Y') }}
+                                        </span>
+                                    </div>
+                                    <div class="text-center mt-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="text-sm font-medium text-gray-300">
+                                            <i class="fas fa-mouse-pointer mr-2"></i>Click to view ticket details
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-12">
+                            <div class="card-elegant p-12 max-w-sm mx-auto">
+                                <i class="fas fa-ticket-alt text-6xl mb-6 text-gray-400"></i>
+                                <h3 class="text-2xl font-semibold mb-4 text-white">No Bookings Yet</h3>
+                                <p class="text-gray-400 mb-8">Start exploring movies and book your first show!</p>
+                                <a href="{{ url_for('home') }}" class="btn-primary">
+                                    <i class="fas fa-film mr-2"></i>Explore Movies
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- My Watchlist -->
+                <div class="card-elegant p-8">
+                    <h2 class="text-3xl font-semibold mb-8 text-white">My Watchlist</h2>
+                    
+                    {% if watchlist %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            {% for item in watchlist %}
+                                <div class="p-6 rounded-2xl bg-white bg-opacity-5 border border-gray-600 hover:border-gray-400 transition-all group hover-lift">
+                                    <div class="flex space-x-6">
+                                        <div class="relative">
+                                            <img src="{{ item.movie.poster_url }}" alt="{{ item.movie.title }}" class="w-24 h-32 object-cover rounded-lg shadow-lg">
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="font-semibold text-white mb-3 text-lg truncate">{{ item.movie.title }}</h3>
+                                            <div class="flex flex-wrap gap-2 mb-4">
+                                                {% for genre in item.movie.genre.split(', ')[:2] %}
+                                                    <span class="genre-tag text-xs">{{ genre }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="flex flex-col space-y-3">
+                                                <a href="{{ url_for('movie_detail', id=item.movie.id) }}"
+                                                   class="text-sm font-medium text-white hover:text-gray-300 transition-colors hover:underline">
+                                                    <i class="fas fa-eye mr-2"></i>View Details
+                                                </a>
+                                                <a href="{{ url_for('remove_from_watchlist', movie_id=item.movie.id) }}" 
+                                                   class="text-red-400 hover:text-red-300 text-sm font-medium transition-colors hover:underline">
+                                                    <i class="fas fa-trash mr-2"></i>Remove
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-12">
+                            <div class="card-elegant p-12 max-w-sm mx-auto">
+                                <i class="fas fa-heart text-6xl mb-6 text-yellow-400"></i>
+                                <h3 class="text-2xl font-semibold mb-4 text-white">Empty Watchlist</h3>
+                                <p class="text-gray-400 mb-8">Add some movies to watch later!</p>
+                                <a href="{{ url_for('home') }}" class="btn-gold">
+                                    <i class="fas fa-plus mr-2"></i>Discover Movies
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+
+<script>
+function uploadProfilePicture() {
+    const form = document.getElementById('profilePictureForm');
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error uploading profile picture: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error uploading profile picture');
+    });
+}
+</script>
+{% endblock %}

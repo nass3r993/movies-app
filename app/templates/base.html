@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CinemaMax - Premium Movie Experience{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-tertiary: #1f1f1f;
+            --bg-card: #252525;
+            --accent-primary: #ffffff;
+            --accent-secondary: #b3b3b3;
+            --accent-muted: #666666;
+            --accent-gold: #d4af37;
+            --accent-red: #dc2626;
+            --border-subtle: #333333;
+            --border-light: #404040;
+            --shadow-soft: rgba(0, 0, 0, 0.3);
+            --shadow-strong: rgba(0, 0, 0, 0.6);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg-primary);
+            color: var(--accent-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        
+        /* Elegant Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #f5f5f5 100%);
+            color: var(--bg-primary);
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #f5f5f5 0%, var(--accent-primary) 100%);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-primary);
+            border: 2px solid var(--border-light);
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #b8941f 100%);
+            color: var(--bg-primary);
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+        }
+        
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        /* Elegant Card Styles */
+        .card-elegant {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card-elegant:hover {
+            border-color: var(--border-light);
+            box-shadow: 0 8px 32px var(--shadow-soft);
+        }
+        
+        /* Movie Card Styles */
+        .movie-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            position: relative;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px var(--shadow-strong);
+            border-color: var(--border-light);
+        }
+        
+        .movie-poster {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .movie-poster img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        
+        .movie-card:hover .movie-poster img {
+            transform: scale(1.05);
+        }
+        
+        .movie-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.9) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 24px;
+        }
+        
+        .movie-card:hover .movie-overlay {
+            opacity: 1;
+        }
+        
+        /* Navigation Styles */
+        .navbar {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            background: rgba(10, 10, 10, 0.98);
+            box-shadow: 0 4px 20px var(--shadow-soft);
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 28px;
+            color: var(--accent-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-link {
+            color: var(--accent-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            overflow: hidden;
+        }
+        
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            filter: blur(1px);
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(20, 20, 20, 0.6) 100%);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 24px;
+        }
+        
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--accent-primary);
+            line-height: 1.1;
+            letter-spacing: -2px;
+        }
+        
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--accent-secondary);
+            margin-bottom: 40px;
+            font-weight: 400;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+        
+        /* Search Styles */
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 18px 24px 18px 56px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-subtle);
+            border-radius: 12px;
+            color: var(--accent-primary);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--border-light);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-muted);
+            font-size: 18px;
+        }
+        
+        /* Form Styles */
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-subtle);
+            border-radius: 10px;
+            color: var(--accent-primary);
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--border-light);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--accent-primary);
+            font-size: 15px;
+            letter-spacing: 0.3px;
+        }
+        
+        /* Rating and Price Styles */
+        .rating-badge {
+            background: var(--accent-gold);
+            color: var(--bg-primary);
+            font-weight: 700;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        
+        .price-tag {
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 18px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Genre Tags */
+        .genre-tag {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--accent-secondary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid var(--border-subtle);
+            letter-spacing: 0.3px;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Grid Layouts */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 32px;
+            padding: 32px 0;
+        }
+        
+        /* Profile Avatar */
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--border-light);
+            object-fit: cover;
+        }
+        
+        /* Seat Selection */
+        .seat {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .seat.available {
+            background: var(--bg-card);
+            border: 2px solid var(--border-subtle);
+            color: var(--accent-secondary);
+        }
+        
+        .seat.available:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-light);
+            color: var(--accent-primary);
+        }
+        
+        .seat.selected {
+            background: var(--accent-primary);
+            border: 2px solid var(--accent-primary);
+            color: var(--bg-primary);
+        }
+        
+        .seat.occupied {
+            background: var(--accent-red);
+            border: 2px solid var(--accent-red);
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        /* Flash Messages */
+        .flash-message {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px var(--shadow-soft);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 24px;
+                padding: 24px 0;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-muted);
+        }
+        
+        /* Star Rating */
+        .star-rating {
+            color: var(--accent-gold);
+        }
+        
+        .star-rating-input {
+            color: var(--accent-muted);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .star-rating-input:hover {
+            color: var(--accent-gold);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            margin-top: 80px;
+        }
+        
+        /* Elegant spacing and typography improvements */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+            letter-spacing: -1px;
+        }
+        
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--accent-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+        
+        /* Elegant hover effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px var(--shadow-soft);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center">
+                    <a href="{{ url_for('home') }}" class="logo flex items-center">
+                        <i class="fas fa-film mr-3 text-2xl"></i>CinemaMax
+                    </a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{{ url_for('home') }}" class="nav-link">Movies</a>
+                    <a href="{{ url_for('about') }}" class="nav-link">About</a>
+                    <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
+                    
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="nav-link flex items-center">
+                            <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" 
+                                 alt="Profile" class="profile-avatar mr-2">
+                            My Account
+                        </a>
+                        <a href="{{ url_for('update_profile') }}" class="nav-link">
+                            <i class="fas fa-user-edit mr-1"></i>Profile
+                        </a>
+                        {% if current_user.is_admin %}
+                            <a href="{{ url_for('admin_panel') }}" class="nav-link text-yellow-400">
+                                <i class="fas fa-cog mr-1"></i>Admin
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('logout') }}" class="nav-link">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                        <a href="{{ url_for('register') }}" class="btn-primary">Sign Up</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div id="mobileMenu" class="hidden md:hidden pb-6">
+                <div class="flex flex-col space-y-4">
+                    <a href="{{ url_for('home') }}" class="nav-link">Movies</a>
+                    <a href="{{ url_for('about') }}" class="nav-link">About</a>
+                    <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
+                    
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="nav-link">My Account</a>
+                        {% if current_user.is_admin %}
+                            <a href="{{ url_for('admin_panel') }}" class="nav-link text-yellow-400">Admin</a>
+                        {% endif %}
+                        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                        <a href="{{ url_for('register') }}" class="btn-primary text-center">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed top-24 right-6 z-50 space-y-3">
+                {% for category, message in messages %}
+                    <div class="flash-message max-w-sm fade-in">
+                        <div class="flex items-center justify-between">
+                            <span class="text-white">{{ message }}</span>
+                            <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-white ml-4">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="pt-20">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer text-white py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div>
+                    <h3 class="logo text-2xl mb-6">CinemaMax</h3>
+                    <p class="text-gray-400 leading-relaxed">Your premier destination for the latest movies and unforgettable cinema experiences.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-6 text-white">Quick Links</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li><a href="{{ url_for('home') }}" class="hover:text-white transition-colors">Movies</a></li>
+                        <li><a href="{{ url_for('about') }}" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="{{ url_for('contact') }}" class="hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="{{ url_for('privacy') }}" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-6 text-white">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-6 text-white">Contact Info</h4>
+                    <div class="text-gray-400 space-y-3">
+                        <p><i class="fas fa-phone mr-2 text-white"></i>(555) 123-4567</p>
+                        <p><i class="fas fa-envelope mr-2 text-white"></i>info@cinemamax.com</p>
+                        <p><i class="fas fa-map-marker-alt mr-2 text-white"></i>Riyadh, KAFD, cinemamax</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 CinemaMax. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Auto-hide flash messages
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.flash-message');
+            alerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all movie cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const movieCards = document.querySelectorAll('.movie-card');
+            movieCards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

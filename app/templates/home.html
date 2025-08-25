@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-bg" style="background-image: url('https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=1600');"></div>
+    <div class="hero-overlay"></div>
+    
+    <div class="hero-content fade-in">
+        <h1 class="hero-title">Discover Cinema</h1>
+        <p class="hero-subtitle">Experience the magic of storytelling with premium comfort and cutting-edge technology</p>
+        
+        <!-- Search Section -->
+        <div class="search-container">
+            <form method="GET" class="max-w-4xl mx-auto">
+                <div class="flex flex-col lg:flex-row gap-4 items-center">
+                    <!-- Search Input -->
+                    <div class="relative flex-1 w-full">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400 text-lg"></i>
+                        </div>
+                        <input type="text" 
+                               name="search" 
+                               value="{{ search }}" 
+                               placeholder="Search movies, actors, directors..." 
+                               class="w-full pl-12 pr-4 py-4 bg-black bg-opacity-40 backdrop-blur-sm border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-white focus:bg-opacity-60 transition-all duration-300 text-lg">
+                    </div>
+                    
+                    <!-- Genre Filter -->
+                    <div class="relative w-full lg:w-64">
+                        <select name="genre" 
+                                class="w-full px-4 py-4 bg-black bg-opacity-40 backdrop-blur-sm border border-gray-600 rounded-xl text-white focus:outline-none focus:border-white focus:bg-opacity-60 transition-all duration-300 text-lg appearance-none cursor-pointer">
+                            <option value="">All Genres</option>
+                            {% for genre in genres %}
+                                <option value="{{ genre }}" {% if genre == genre_filter %}selected{% endif %}>{{ genre }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                            <i class="fas fa-chevron-down text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Button -->
+                    <button type="submit" 
+                            class="w-full lg:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 flex items-center justify-center text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <i class="fas fa-search mr-2"></i>
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#now-showing" class="btn-primary px-8 py-4">
+                <i class="fas fa-play mr-2"></i>Browse Movies
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Now Showing Section -->
+<section id="now-showing" class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="section-title">Now Showing</h2>
+            <p class="section-subtitle">
+                Catch the latest blockbusters and critically acclaimed films in our premium theaters
+            </p>
+        </div>
+        
+        {% if now_showing %}
+            <div class="movies-grid">
+                {% for movie in now_showing %}
+                    <div class="movie-card slide-up hover-lift" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+                        <div class="movie-poster">
+                            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}">
+                            <div class="absolute top-4 right-4">
+                                <span class="rating-badge">{{ movie.rating }}</span>
+                            </div>
+                            <div class="movie-overlay">
+                                <div class="w-full">
+                                    <div class="flex flex-wrap gap-2 mb-4">
+                                        {% for genre in movie.genre.split(', ')[:2] %}
+                                            <span class="genre-tag">{{ genre }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="flex space-x-3">
+                                        <a href="{{ url_for('movie_detail', id=movie.id) }}" 
+                                           class="btn-secondary flex-1 text-center text-sm py-3">
+                                            <i class="fas fa-info-circle mr-1"></i>Details
+                                        </a>
+                                        <a href="{{ url_for('book_movie', id=movie.id) }}" 
+                                           class="btn-primary flex-1 text-center text-sm py-3">
+                                            <i class="fas fa-ticket-alt mr-1"></i>Book Now
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-3 text-white">{{ movie.title }}</h3>
+                            <p class="text-gray-400 text-sm mb-4 line-clamp-2">{{ movie.description }}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                    <span><i class="fas fa-clock mr-1"></i>{{ movie.duration }}m</span>
+                                    <span><i class="fas fa-calendar mr-1"></i>{{ movie.release_date.strftime('%Y') }}</span>
+                                </div>
+                                <span class="price-tag">${{ "%.2f"|format(movie.price) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-20">
+                <div class="card-elegant max-w-md mx-auto text-center p-12">
+                    <i class="fas fa-film text-6xl mb-6 text-gray-400"></i>
+                    <h3 class="text-2xl font-semibold mb-4">No Movies Found</h3>
+                    <p class="text-gray-400 mb-6">We couldn't find any movies matching your search criteria.</p>
+                    <a href="{{ url_for('home') }}" class="btn-primary">
+                        <i class="fas fa-refresh mr-2"></i>Reset Search
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Coming Soon Section -->
+{% if coming_soon %}
+<section id="coming-soon" class="py-24" style="background: var(--bg-secondary);">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="section-title">Coming Soon</h2>
+            <p class="section-subtitle">
+                Get ready for the most anticipated movies of the year
+            </p>
+        </div>
+        
+        <div class="movies-grid">
+            {% for movie in coming_soon %}
+                <div class="movie-card slide-up hover-lift" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+                    <div class="movie-poster">
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}">
+                        <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="bg-black bg-opacity-50 backdrop-blur-sm p-8 rounded-2xl mb-4 inline-block border border-gray-600">
+                                    <i class="fas fa-calendar-alt text-4xl mb-3 text-yellow-400"></i>
+                                    <p class="text-white font-bold text-lg">{{ movie.release_date.strftime('%b %d, %Y') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-3 text-white">{{ movie.title }}</h3>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {% for genre in movie.genre.split(', ')[:2] %}
+                                <span class="genre-tag">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6 line-clamp-2">{{ movie.description }}</p>
+                        <a href="{{ url_for('movie_detail', id=movie.id) }}" 
+                           class="btn-gold w-full text-center py-3">
+                            <i class="fas fa-eye mr-2"></i>Learn More
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Features Section -->
+<section class="py-24">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-20">
+            <h2 class="section-title">Premium Experience</h2>
+            <p class="section-subtitle">
+                Experience movies like never before with our world-class amenities and cutting-edge technology
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div class="card-elegant p-8 text-center hover-lift">
+                <div class="w-20 h-20 rounded-full bg-white bg-opacity-10 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-tv text-3xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-white">4K Premium Screens</h3>
+                <p class="text-gray-400 leading-relaxed">Experience crystal-clear picture quality on our massive 4K screens with HDR technology and immersive visuals.</p>
+            </div>
+            
+            <div class="card-elegant p-8 text-center hover-lift" >
+                <div class="w-20 h-20 rounded-full bg-white bg-opacity-10 flex items-center justify-center mx-auto mb-6" style="background-color: #3b3b3b !important;">
+                    <i class="fas fa-volume-up text-3xl text-white" style="background-color: #3b3b3b !important;"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-white">Dolby Atmos Sound</h3>
+                <p class="text-gray-400 leading-relaxed">Immerse yourself in three-dimensional soundscapes that put you right in the heart of the action.</p>
+            </div>
+            
+            <div class="card-elegant p-8 text-center hover-lift">
+                <div class="w-20 h-20 rounded-full bg-white bg-opacity-10 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-couch text-3xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-white">Luxury Seating</h3>
+                <p class="text-gray-400 leading-relaxed">Relax in our premium leather recliners with extra legroom, cup holders, and personal amenities.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}

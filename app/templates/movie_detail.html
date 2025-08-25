@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <!-- Movie Header -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div class="lg:col-span-1">
+            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" 
+                 class="w-full rounded-lg shadow-lg">
+            
+            <div class="mt-6 space-y-4">
+                {% if current_user.is_authenticated %}
+                    {% if is_in_watchlist %}
+                        <a href="{{ url_for('remove_from_watchlist', movie_id=movie.id) }}" 
+                           class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg text-center block transition-colors">
+                            <i class="fas fa-heart mr-2"></i>Remove from Watchlist
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('add_to_watchlist', movie_id=movie.id) }}" 
+                           class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-center block transition-colors">
+                            <i class="far fa-heart mr-2"></i>Add to Watchlist
+                        </a>
+                    {% endif %}
+                {% endif %}
+                
+                {% if movie.is_now_showing %}
+                    <a href="{{ url_for('book_movie', id=movie.id) }}" 
+                       class="w-full btn-primary py-3 rounded-lg text-center block">
+                        <i class="fas fa-ticket-alt mr-2"></i>Book Tickets
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="lg:col-span-2">
+            <h1 class="text-4xl font-bold mb-4">{{ movie.title }}</h1>
+            
+            <div class="flex flex-wrap items-center gap-4 mb-6 text-sm">
+                <span class="bg-yellow-600 text-black px-3 py-1 rounded-full font-semibold">{{ movie.rating }}</span>
+                <span class="text-gray-300">{{ movie.duration }} minutes</span>
+                <span class="text-gray-300">{{ movie.release_date.strftime('%Y') }}</span>
+                <span class="text-green-400 font-bold text-lg">${{ "%.2f"|format(movie.price) }}</span>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold mb-2 gold-accent">Genre</h3>
+                <p class="text-gray-300">{{ movie.genre }}</p>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold mb-2 gold-accent">Synopsis</h3>
+                <p class="text-gray-300 leading-relaxed">{{ movie.description }}</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 gold-accent">Director</h3>
+                    <p class="text-gray-300">{{ movie.director }}</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 gold-accent">Cast</h3>
+                    <p class="text-gray-300">{{ movie.cast }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Trailer -->
+    {% if movie.trailer_url %}
+    <div class="mb-12">
+        <h2 class="text-2xl font-bold mb-6 gold-accent">Trailer</h2>
+        <div class="relative rounded-lg overflow-hidden shadow-lg" style="height: 600px;">
+            <iframe src="{{ movie.trailer_url }}" 
+                    class="w-full h-full" 
+                    frameborder="0" 
+                    allowfullscreen>
+            </iframe>
+        </div>
+
+    </div>
+    {% endif %}
+    
+    <!-- Reviews Section -->
+    <div class="mb-12">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold gold-accent">Reviews</h2>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('movie_reviews', id=movie.id) }}" 
+                   class="btn-primary px-4 py-2 rounded-lg">
+                    <i class="fas fa-plus mr-2"></i>Add Review
+                </a>
+            {% endif %}
+        </div>
+        
+        {% if reviews %}
+            <div class="space-y-6">
+                {% for review in reviews[:3] %}
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 onload=alert('test')  class="font-semibold">{{ review.user.username }}</h4>
+                                <div class="flex items-center mt-1">
+                                    {% for i in range(1, 6) %}
+                                        <i class="fas fa-star {% if i <= review.rating %}star-rating{% else %}text-gray-600{% endif %}"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <span class="text-gray-400 text-sm">{{ review.created_at.strftime('%b %d, %Y') }}</span>
+                        </div>
+                        <input class="text-gray-300" style="background-color: #1f2937; length: 20%; width: 50%;" type="text" value='{{ review.content | safe | e }}' disabled>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if reviews|length > 3 %}
+                <div class="text-center mt-6">
+                    <a href="{{ url_for('movie_reviews', id=movie.id) }}" 
+                       class="text-yellow-400 hover:text-yellow-300 transition-colors">
+                        View all {{ reviews|length }} reviews →
+                    </a>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-8">
+                <i class="fas fa-comments text-4xl text-gray-600 mb-4"></i>
+                <p class="text-gray-400">No reviews yet. Be the first to review this movie!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

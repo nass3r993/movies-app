@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - CinemaMax{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">Complete Your Booking</h1>
+        
+        <!-- Payment Gateway Notice -->
+        <div class="bg-red-900 border border-red-500 p-6 rounded-lg mb-8">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-exclamation-triangle text-yellow-400 text-2xl mr-3"></i>
+                <h2 class="text-xl font-bold text-red-200">Payment Gateway Temporarily Unavailable</h2>
+            </div>
+            <p class="text-red-100 mb-4">
+                We're experiencing technical difficulties with our credit card payment system. 
+                However, you can still complete your booking using your wallet balance.
+            </p>
+            <div class="bg-red-800 p-4 rounded border border-red-600">
+                <p class="text-red-100 text-sm">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Our team is working to resolve this issue. We apologize for any inconvenience.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Booking Summary -->
+        <div class="bg-gray-800 p-6 rounded-lg mb-8">
+            <h2 class="text-xl font-bold mb-4 gold-accent">Booking Summary</h2>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span>Movie:</span>
+                    <span class="font-semibold">{{ showtime.movie.title }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Cinema:</span>
+                    <span>{{ showtime.cinema.name }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Date & Time:</span>
+                    <span>{{ showtime.show_date.strftime('%b %d, %Y') }} at {{ showtime.show_time.strftime('%I:%M %p') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Seats:</span>
+                    <span class="font-semibold">{{ seats }}</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold border-t border-gray-600 pt-3">
+                    <span>Total:</span>
+                    <span class="text-green-400">${{ "%.2f"|format(total_price_display) }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wallet Payment Section -->
+        <div class="bg-gray-800 p-6 rounded-lg">
+            <h2 class="text-xl font-bold mb-6 gold-accent flex items-center">
+                <i class="fas fa-wallet mr-3"></i>Pay with Wallet
+            </h2>
+            
+            <!-- Wallet Balance Display -->
+            <div class="bg-gradient-to-r from-yellow-600 to-yellow-500 p-6 rounded-lg mb-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-100 text-sm font-medium">Current Wallet Balance</p>
+                        <p class="text-3xl font-bold text-white">${{ "%.2f"|format(current_user.wallet_balance) }}</p>
+                    </div>
+                    <div class="text-yellow-100">
+                        <i class="fas fa-coins text-4xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Balance Check and Payment Form -->
+            {% if current_user.wallet_balance >= total_price_display %}
+                <div class="bg-green-900 border border-green-500 p-4 rounded-lg mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-400 text-xl mr-3"></i>
+                        <div>
+                            <p class="text-green-200 font-medium">Sufficient Balance Available</p>
+                            <p class="text-green-300 text-sm">
+                                After payment, your remaining balance will be: ${{ "%.2f"|format(current_user.wallet_balance - total_price_display) }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="paymentForm" method="POST">
+                    <input type="hidden" name="showtime_id" value="{{ request.args.get('showtime_id') }}">
+                    <input type="hidden" name="seats" value="{{ seats_encrypted }}">
+                    <input type="hidden" name="total_price" value="{{ total_price_encrypted }}">
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white font-bold py-4 rounded-lg text-lg transition-all duration-200 transform hover:scale-105">
+                        <i class="fas fa-wallet mr-2"></i>Pay ${{ "%.2f"|format(total_price_display) }} from Wallet
+                    </button>
+                </form>
+            {% else %}
+                <div class="bg-red-900 border border-red-500 p-4 rounded-lg mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-times-circle text-red-400 text-xl mr-3"></i>
+                        <div>
+                            <p class="text-red-200 font-medium">Insufficient Wallet Balance</p>
+                            <p class="text-red-300 text-sm">
+                                You need ${{ "%.2f"|format(total_price_display - current_user.wallet_balance) }} more to complete this booking.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button disabled class="w-full bg-gray-600 text-gray-400 font-bold py-4 rounded-lg text-lg cursor-not-allowed">
+                    <i class="fas fa-wallet mr-2"></i>Insufficient Balance
+                </button>
+                
+                <div class="text-center mt-4">
+                    <p class="text-gray-400 text-sm">Please contact support to add funds to your wallet.</p>
+                </div>
+            {% endif %}
+            
+            <div class="text-center mt-6">
+                <p class="text-gray-400 text-sm">
+                    <i class="fas fa-shield-alt mr-1"></i>
+                    Wallet payments are instant and secure
+                </p>
+            </div>
+        </div>
+        
+        <!-- Back to Booking Button -->
+        <div class="text-center mt-8">
+            <a href="{{ url_for('book_movie', id=showtime.movie.id) }}" 
+               class="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Booking
+            </a>
+        </div>
+    </div>
+</div>
+<style>
+.gold-accent {
+    color: #fbbf24;
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
