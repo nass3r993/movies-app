@@ -216,41 +216,71 @@
 </div>
 
 <script>
-function shareTicket() {
+async function shareTicket() {
     const ticketUrl = window.location.href;
     const movieTitle = "{{ booking.showtime.movie.title }}";
-    
+
+    // Try native share first
     if (navigator.share) {
-        navigator.share({
-            title: `CinemaMax Ticket - ${movieTitle}`,
-            text: `Check out this ticket for ${movieTitle} at CinemaMax!`,
-            url: ticketUrl
-        });
+        try {
+            await navigator.share({
+                title: `CinemaMax Ticket - ${movieTitle}`,
+                text: `Check out this ticket for ${movieTitle} at CinemaMax!`,
+                url: ticketUrl
+            });
+            return; // shared successfully
+        } catch (err) {
+            // User cancelled or share not allowed -> fall back to copy
+        }
+    }
+
+    // Clipboard copy fallback (prefer secure API when available)
+    const copyWithToast = (messageHtml) => {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-24 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+        toast.innerHTML = messageHtml;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    };
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(ticketUrl);
+            copyWithToast('<i class="fas fa-check mr-2 text-green-400"></i>Ticket link copied to clipboard!');
+            return;
+        }
+    } catch (_) {
+        // ignore and try legacy method
+    }
+
+    // Legacy copy (works on non-secure origins as last resort)
+    const tempInput = document.createElement('input');
+    tempInput.value = ticketUrl;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    tempInput.setSelectionRange(0, ticketUrl.length);
+    let copied = false;
+    try {
+        copied = document.execCommand('copy');
+    } catch (_) {
+        copied = false;
+    }
+    document.body.removeChild(tempInput);
+
+    if (copied) {
+        copyWithToast('<i class="fas fa-check mr-2 text-green-400"></i>Ticket link copied to clipboard!');
     } else {
-        // Fallback for browsers that don't support Web Share API
-        navigator.clipboard.writeText(ticketUrl).then(() => {
-            // Create a modern toast notification
-            const toast = document.createElement('div');
-            toast.className = 'fixed top-24 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
-            toast.innerHTML = '<i class="fas fa-check mr-2 text-green-400"></i>Ticket link copied to clipboard!';
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }).catch(() => {
-            // Fallback if clipboard API fails
-            const toast = document.createElement('div');
-            toast.className = 'fixed top-24 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
-            toast.innerHTML = `<i class="fas fa-link mr-2 text-blue-400"></i>Share this link: <br><small class="font-mono">${ticketUrl}</small>`;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 5000);
-            }, 8000);
-        });
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-24 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg z-50 fade-in';
+        toast.innerHTML = `<i class="fas fa-link mr-2 text-blue-400"></i>Share this link: <br><small class="font-mono">${ticketUrl}</small>`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 5000);
+        }, 8000);
     }
 }
 
